@@ -4,7 +4,7 @@ Stories By Release Grouped By Feature
 ## Overview
 ![](pic.png)
 
-The grid filters user stories by release and existance of a parent Feature.
+The grid filters user stories by release and presence of a parent Feature.
 Features themselves do not have to be scheduled for release.
 
 ## License
