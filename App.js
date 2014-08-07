@@ -22,7 +22,7 @@ Ext.define('CustomApp', {
          
         Ext.create('Rally.data.wsapi.Store', {
                 model: 'UserStory',
-                fetch: ['ObjectID', 'FormattedID', 'Name', 'ScheduleState', 'Feature'],
+                fetch: ['ObjectID', 'FormattedID', 'Name', 'ScheduleState', 'Feature', 'PlanEstimate'],
                 autoLoad: true,
                 filters: [filter],
                 listeners: {
@@ -73,8 +73,7 @@ Ext.define('CustomApp', {
                         var storyRef = story.get('_ref');
                         var storyOid  = story.get('ObjectID');
                         var storyFid = story.get('FormattedID');
-                        var storyBlocked = story.get('Blocked');
-                        var blockedReason = story.get('BlockedReason');
+                        var storyPlanEstimate = story.get('PlanEstimate');
                         var storyName  = story.get('Name');
                         var storyState = story.get('ScheduleState');
                         var feature = story.get('Feature');
@@ -84,9 +83,8 @@ Ext.define('CustomApp', {
                                     "ObjectID"      : storyOid,
                                     "FormattedID"   : storyFid,
                                     "Name"          : storyName,
+                                    "PlanEstimate"  : storyPlanEstimate,
                                     "ScheduleState" : storyState,
-                                    "Blocked"       : storyBlocked,
-                                    "BlockedReason" : blockedReason,
                                     "Feature"       : feature,
                                     "FeatureState"  : featureState,
                                     "FeatureID"     : featureFid  
@@ -115,8 +113,9 @@ Ext.define('CustomApp', {
         that._grid = Ext.create('Rally.ui.grid.Grid', {
             itemId: 'storyGrid',
             store: gridStore,
-            features: [{ftype:'grouping'}],
+            features: [{ftype:'groupingsummary'}],
             enableBlockedReasonPopover: false,
+            minHeight: 500,
             columnCfgs: [
                 {
                     text: 'Formatted ID', dataIndex: 'FormattedID', xtype: 'templatecolumn',
@@ -130,11 +129,18 @@ Ext.define('CustomApp', {
                     text: 'ScheduleState', dataIndex: 'ScheduleState', xtype: 'templatecolumn',
                         tpl: Ext.create('Rally.ui.renderer.template.ScheduleStateTemplate',
                             {
-                                states: ['Custom 1','Defined', 'In-Progress', 'Completed', 'Accepted'],
+                                states: ['Defined', 'In-Progress', 'Completed', 'Accepted'],
                                 field: {
                                     name: 'ScheduleState' 
                                 }
-                        })
+                        }),
+                        summaryRenderer: function() {
+                            return "PlanEstimate Total"; 
+                        }
+                },
+                {
+                    text: 'PlanEstimate', dataIndex: 'PlanEstimate',
+                    summaryType: 'sum'
                 },
                 {
                     text: 'Feature', dataIndex: 'Feature',
